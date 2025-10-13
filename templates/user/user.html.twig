@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Compte Utilisateur{% endblock %}
+
+{% block body %}
+    <section class="user-profile">
+        <div class="container">
+            <div class="profile-header text-center mb-xl">
+                <h2 class="profile-title mb-sm">Bienvenue, {{ user.email }}!</h2>
+                <p class="profile-description">Gérez vos informations personnelles et vos réservations.</p>
+            </div>
+            <div class="profile-content flex flex-col md:flex-row gap-lg">
+                <div class="profile-sidebar w-full md:w-1/4">
+                    <ul class="sidebar-menu">
+{#                        <li><a href="{{ path('user_reservations', {'id': user.id}) }}" class="sidebar-link">Mes Réservations</a></li>#}
+                    </ul>
+                </div>
+                <div class="profile-main w-full md:w-3/4">
+                    <div class="card card-flat">
+                        <div class="card-body">
+                            <h3 class="card-title mb-md">Informations Personnelles</h3>
+                            <p><strong>Email:</strong> {{ user.email }}</p>
+                            <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-primary mt-md">Modifier le Profil</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

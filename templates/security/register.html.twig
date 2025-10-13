@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Création de compte{% endblock %}
+
+{% block body %}
+    <div class="container d-flex justify-content-center align-items-center min-vh-100">
+        <div class="card shadow-sm p-4" style="max-width: 500px; width: 100%;">
+            <h1 class="text-center text-primary">Création de compte</h1>
+
+            {% if registrationForm.vars.errors|length > 0 %}
+                <div class="alert alert-danger">
+                    {{ form_errors(registrationForm) }}
+                </div>
+            {% endif %}
+
+            {{ form_start(registrationForm) }}
+            <div class="mb-3">
+                {{ form_row(registrationForm.email, {
+                    'label': 'Adresse e-mail',
+                    'attr': {'class': 'form-control'}
+                }) }}
+            </div>
+            <div class="mb-3">
+                {{ form_row(registrationForm.password, {
+                    'label': 'Mot de passe',
+                    'attr': {'class': 'form-control'}
+                }) }}
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">S'enregistrer</button>
+            {{ form_end(registrationForm) }}
+        </div>
+    </div>
+{% endblock %}

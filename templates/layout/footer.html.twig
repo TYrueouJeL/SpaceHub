@@ -1,0 +1,38 @@
+{% block body %}
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <img src="{{ asset('images/logo-white.svg') }}" alt="SpaceHub" class="footer-logo">
+                <p>Des lieux exceptionnels pour vos événements professionnels.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Lieux</h4>
+                <ul>
+                    {% for type in footer_place_types %}
+                        <li><a href="{{ path('app_place') }}">{{ type.name }}</a></li>
+                    {% else %}
+                        <li>Aucun lieu disponible</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="#aide">Centre d'aide</a></li>
+                    <li><a href="mailto:contact@spacehub.fr">Nous contacter</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <p><a href="mailto:contact@spacehub.fr">contact@spacehub.fr</a></p>
+                <p><a href="tel:+33123456789">+33 1 23 45 67 89</a></p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 SpaceHub. Tous droits réservés.</p>
+        </div>
+    </div>
+</footer>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% block body %}
+<header class="header">
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="/">
+                    <img src="{{ asset('images/logo.svg') }}" alt="SpaceHub" class="logo">
+                </a>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/" class="nav-link active">Accueil</a></li>
+                <li><a href="/place" class="nav-link">Lieux</a></li>
+            </ul>
+            <div class="nav-actions">
+                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                    <a class="btn btn-outline" href="{{ path('app_user', {'id': app.user.id}) }}">Mon compte</a>
+                    <a class="btn btn-primary" href="/logout">Se déconnecter</a>
+                {% else %}
+                    <a class="btn btn-outline" href="/register">Créer un compte</a>
+                    <a class="btn btn-primary" href="/login">Se connecter</a>
+                {% endif %}
+            </div>
+
+            <!-- Mobile Menu -->
+            <input type="checkbox" id="menu-toggle" class="menu-checkbox">
+            <label for="menu-toggle" class="mobile-menu-toggle">
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </label>
+
+            <div class="mobile-nav-menu">
+                <ul>
+                    <li><a href="/" class="nav-link active">Accueil</a></li>
+                    <li><a href="/place" class="nav-link">Lieux</a></li>
+                </ul>
+                <div class="mobile-nav-actions">
+                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                        <a class="btn btn-outline" href="{{ path('app_user', {'id': app.user.id}) }}">Mon compte</a>
+                        <a class="btn btn-primary" href="/logout">Se déconnecter</a>
+                    {% else %}
+                        <a class="btn btn-outline" href="/register">Créer un compte</a>
+                        <a class="btn btn-primary" href="/login">Se connecter</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+{% endblock %}

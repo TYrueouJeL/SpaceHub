@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tous les lieux{% endblock %}
+
+{% block body %}
+    <section class="popular-venues">
+        <div class="container">
+            <div class="section-header text-center mb-xl">
+                <h2 class="section-title mb-sm">Tous les lieux</h2>
+                <p class="section-description">Découvrez tous nos espaces</p>
+            </div>
+            <div class="mb-md">
+                <form method="get" action="{{ path('app_place') }}">
+                    <label for="filterType">Filtrer par type&nbsp;:</label>
+                    {% set currentFilter = currentFilter|default(app.request.get('filterType')|default('')) %}
+                    <select id="filterType" name="filterType" onchange="this.form.submit()" class="form-select">
+                        <option value="" {% if currentFilter == '' %}selected{% endif %}>Tous les types</option>
+                        {% for type in placetypes %}
+                            <option value="{{ type.name }}" {% if currentFilter == type.name %}selected{% endif %}>{{ type.name }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+
+            <div class="venues-grid">
+                {% for place in places %}
+                    <div class="card">
+                        <img src="https://picsum.photos/400/200?random={{ place.id }}" alt="{{ place.name }}" class="card-img card-img-top">
+                        <div class="card-body">
+                            <h3 class="card-title">{{ place.name }}</h3>
+                            <p class="card-text">{{ place.type.name }}</p>
+                            <p class="card-text venue-location">{{ place.address }}</p>
+                            <p class="card-text venue-capacity">Jusqu'à {{ place.capacity }} personnes</p>
+                            <p class="card-text">{{ place.description }}</p>
+                            <p class="venue-price">À partir de {{ place.price }}€/jour</p>
+                            <a href="{{ path('app_place_detail', {'id': place.id}) }}" class="btn btn-outline btn-sm">Voir détails</a>
+                            <a href="{{ path('app_place_reservation', {'id': place.id}) }}" class="btn btn-outline btn-sm">Réserver</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <p>Aucun lieu trouvé.</p>
+                {% endfor %}
+            </div>
+
+            {# Pagination controls #}
+            {% set currentPage = currentPage|default(app.request.get('page')|default(1)) %}
+            {% set totalPages = totalPages|default(1) %}
+            {% if totalPages > 1 %}
+                <nav aria-label="Pagination">
+                    <ul class="pagination">
+                        {% if currentPage > 1 %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ path('app_place', {'page': currentPage - 1, 'filterType': currentFilter}) }}">Précédent</a>
+                            </li>
+                        {% endif %}
+
+                        {% for i in 1..totalPages %}
+                            <li class="page-item {% if i == (currentPage|default(1)) %}active{% endif %}">
+                                <a class="page-link" href="{{ path('app_place', {'page': i, 'filterType': currentFilter}) }}">{{ i }}</a>
+                            </li>
+                        {% endfor %}
+
+                        {% if currentPage < totalPages %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ path('app_place', {'page': currentPage + 1, 'filterType': currentFilter}) }}">Suivant</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}

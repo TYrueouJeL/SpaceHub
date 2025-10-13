@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tous les lieux{% endblock %}
+
+{% block body %}
+    <section class="popular-venues">
+        <div class="container">
+            <div class="section-header text-center mb-xl">
+                <h2 class="section-title mb-sm">{{ place.name }}</h2>
+                <p class="section-description">{{ place.description }}</p>
+            </div>
+            <div class="venues-grid">
+                <div class="card">
+                    <img src="https://picsum.photos/400/200?random={{ place.id }}" alt="{{ place.name }}" class="card-img card-img-top">
+                    <div class="card-body">
+                        <h3 class="card-title">{{ place.name }}</h3>
+                        <p class="card-text">{{ place.type.name }}</p>
+                        <p class="card-text">{{ place.description }}</p>
+                        <p class="card-text venue-location">{{ place.address }}</p>
+                        <p class="card-text venue-capacity">Jusqu'à {{ place.capacity }} personnes</p>
+                        <div>
+                            <p class="card-text">Équipements :</p>
+
+                            {% for equipment in equipments %}
+                                <span class="badge badge-primary">{{ equipment.name }}</span>
+                            {% endfor %}
+                        </div>
+                        <p class="venue-price">À partir de {{ place.price }}€/jour</p>
+                        <a href="/place/{{ place.id }}/reservation" class="btn btn-outline btn-sm">Réserver</a>
+                    </div>
+
+                    {% for review in reviews %}
+                        <div class="card-footer">
+                            <strong>{{ review.user.email }}</strong> -
+                            <span class="text-muted ">{{ review.createdAt|date('d/m/Y') }}</span>
+                            <p>{{ review.comment }}</p>
+                            <p>Note : {{ review.rating }}/5</p>
+                        </div>
+                    {% else %}
+                        <div class="card-footer">
+                            <p>Aucun avis pour le moment.</p>
+                        </div>
+                    {% endfor %}
+
+                    {% if reviewStatus == "not_logged_in" %}
+                        <div class="card-footer">
+                            <p>Vous devez être connecté pour laisser un avis.</p>
+                        </div>
+                    {% elseif reviewStatus == "already_reviewed" %}
+                        <div class="card-footer">
+                            <p>Vous avez déjà laissé un avis pour ce lieu.</p>
+                        </div>
+                    {% else %}
+                        {{ form_start(reviewForm) }}
+                        <div class="mb-3">
+                            {{ form_row(reviewForm.rating, {
+                                'label': 'Note (1 à 5)',
+                                'attr': {'class': 'form-control', 'min': 1, 'max': 5, 'step': 1, 'type': 'number', 'placeholder': 'Entrez une note entre 1 et 5'}
+                            }) }}
+                        </div>
+                        <div class="mb-3">
+                            {{ form_row(reviewForm.comment, {
+                                'label': 'Commentaire',
+                                'attr': {'class': 'form-control', 'placeholder': 'Laissez votre commentaire ici...'}
+                            }) }}
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Ajouter un avis</button>
+                        {{ form_end(reviewForm) }}
+                    {% endif %}
+
+                    <a class="" href="/place">Retour</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Toutes vos réservations{% endblock %}
+
+{% block body %}
+    <section class="popular-venues">
+        <div class="container">
+            <div class="section-header text-center mb-xl">
+                <h2 class="section-title mb-sm">Toutes vos réservations</h2>
+            </div>
+            <div class="mb-md">
+                <form method="get" action="">
+                    <label for="filterType">Filtrer par type&nbsp;:</label>
+                    {% set currentFilter = app.request.get('filterType')|default(filterType|default('')) %}
+                    <select id="filterType" name="filterType" onchange="this.form.submit()" class="form-select">
+                        <option value="" {% if currentFilter == '' %}selected{% endif %}>Tous les types</option>
+                        {% for type in placeTypes %}
+                            <option value="{{ type.name }}" {% if currentFilter == type.name %}selected{% endif %}>{{ type.name }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+            <div class="venues-grid">
+                {% for reservation in reservations %}
+                    {% if currentFilter == '' or reservation.place.type.name == currentFilter %}
+                        <div class="card">
+                            <img src="https://picsum.photos/400/200?random={{ reservation.place.id }}" alt="{{ reservation.place.name }}" class="card-img card-img-top">
+                            <div class="card-body">
+                                <h3 class="card-title">{{ reservation.place.name }}</h3>
+                                <p class="card-text">{{ reservation.place.type.name }}</p>
+                                <p class="card-text venue-location">{{ reservation.place.address }}</p>
+                                <p class="card-text venue-capacity">Jusqu'à {{ reservation.place.capacity }} personnes</p>
+                                <p class="card-text">{{ reservation.place.description }}</p>
+                                <p class="card-text">Réservé du {{ reservation.startDate|date('d/m/Y') }} au {{ reservation.endDate|date('d/m/Y') }}</p>
+                                <p class="venue-price">À partir de {{ reservation.place.price }}€/jour</p>
+                                <a href="/place/{{ reservation.place.id }}" class="btn btn-outline btn-sm">Voir détails</a>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modification de compte{% endblock %}
+
+{% block body %}
+    <div class="container d-flex justify-content-center align-items-center min-vh-100">
+        <div class="card shadow-sm p-4" style="max-width: 500px; width: 100%;">
+            <h1 class="text-center text-primary">Modification de compte</h1>
+
+            {{ form_start(editForm) }}
+            <div class="mb-3">
+                {{ form_row(editForm.email, {'label': 'Adresse e-mail', 'required': false, 'attr': {'class': 'form-control'}}) }}
+            </div>
+            <div class="mb-3">
+                {{ form_row(editForm.password, {'label': 'Mot de passe', 'required': false, 'attr': {'class': 'form-control'}}) }}
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Modifier</button>
+            {{ form_end(editForm) }}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content text-center">
+                <h1 class="hero-title mb-md">
+                    Des lieux <span class="highlight">exceptionnels</span><br>
+                    pour vos événements
+                </h1>
+                <p class="hero-description mb-xl">
+                    SpaceHub vous propose une sélection de lieux uniques et flexibles
+                    pour vos réunions, événements et activités professionnelles.
+                </p>
+                <div class="hero-actions flex gap-md justify-center">
+                    <a href="/place" class="btn btn-primary btn-lg">Découvrir nos lieux</a>
+                    <a href="mailto:contact@spacehub.fr" class="btn btn-outline btn-lg">Nous contacter</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <div class="section-header text-center mb-xl">
+                <h2 class="section-title mb-sm">Pourquoi choisir SpaceHub ?</h2>
+                <p class="section-description">
+                    Des solutions adaptées à tous vos besoins
+                </p>
+            </div>
+            <div class="features-grid">
+                <div class="card card-flat">
+                    <div class="card-body text-center">
+                        <div class="feature-icon">🏢</div>
+                        <h3 class="card-title">Lieux flexibles</h3>
+                        <p class="card-text">Des espaces modulables qui s'adaptent à la taille et au type de votre événement.</p>
+                    </div>
+                </div>
+                <div class="card card-flat">
+                    <div class="card-body text-center">
+                        <div class="feature-icon">⚡</div>
+                        <h3 class="card-title">Réservation rapide</h3>
+                        <p class="card-text">Système de réservation en ligne simple et efficace, disponible 24h/24.</p>
+                    </div>
+                </div>
+                <div class="card card-flat">
+                    <div class="card-body text-center">
+                        <div class="feature-icon">🛡️</div>
+                        <h3 class="card-title">Service premium</h3>
+                        <p class="card-text">Accompagnement personnalisé et support technique pour garantir le succès de vos événements.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Popular Venues -->
+    <section class="popular-venues">
+        <div class="container">
+            <div class="section-header text-center mb-xl">
+                <h2 class="section-title mb-sm">Lieux populaires</h2>
+                <p class="section-description">Découvrez nos espaces les plus demandés</p>
+            </div>
+            <div class="venues-grid">
+                {% for place in places %}
+                    <div class="card">
+                        <img src="https://picsum.photos/400/200?random={{ place.id }}" alt="{{ place.name }}" class="card-img card-img-top">
+                        <div class="card-body">
+                            <h3 class="card-title">{{ place.name }}</h3>
+                            <p class="card-text">{{ place.type.name }}</p>
+                            <p class="card-text venue-location">{{ place.address }}</p>
+                            <p class="card-text venue-capacity">Jusqu'à {{ place.capacity }} personnes</p>
+                            <p class="card-text">{{ place.description }}</p>
+                            <p class="venue-price">À partir de {{ place.price }}€/jour</p>
+                            <a href="/place/{{ place.id }}" class="btn btn-outline btn-sm">Voir détails</a>
+                            <a href="/place/{{ place.id }}/reservation" class="btn btn-outline btn-sm">Réserver</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="section-actions text-center">
+                <a href="/place" class="btn btn-primary">Voir tous les lieux</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <div class="cta-content text-center">
+                <h2 class="cta-title mb-sm">Prêt à réserver votre lieu ?</h2>
+                <p class="cta-description mb-xl">
+                    Rejoignez des centaines d'entreprises qui nous font confiance
+                </p>
+                <a href="mailto:contact@spacehub.fr" class="btn btn-primary btn-lg">Nous contacter</a>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}

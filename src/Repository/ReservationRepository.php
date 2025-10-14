@@ -16,6 +16,41 @@ class ReservationRepository extends ServiceEntityRepository
         parent::__construct($registry, Reservation::class);
     }
 
+    public function countBetween(\DateTimeImmutable $start, \DateTimeImmutable $end): int
+    {
+        $qb = $this->createQueryBuilder('r');
+        $qb->select('COUNT(r.id)')
+            ->where('r.createdAt >= :start')
+            ->andWhere('r.createdAt < :end')
+            ->setParameter('start', $start)
+            ->setParameter('end', $end);
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
+
+    // Récupère toutes les réservations, et fait multiplie la durée en jour par le prix de la place, puis fait la somme de tout ça
+    public function sumTotalPrice(): float
+    {
+        $qb = $this->createQueryBuilder('r');
+        $qb->select('COALESCE(SUM(DATE_DIFF(r.endDate, r.startDate) * p.price), 0) AS total')
+            ->join('r.place', 'p');
+
+        return (float) $qb->getQuery()->getSingleScalarResult();
+    }
+
+    public function sumTotalPriceBetween(\DateTimeImmutable $start, \DateTimeImmutable $end): float
+    {
+        $qb = $this->createQueryBuilder('r');
+        $qb->select('COALESCE(SUM(DATE_DIFF(r.endDate, r.startDate) * p.price), 0) AS total')
+            ->join('r.place', 'p')
+            ->where('r.createdAt >= :start')
+            ->andWhere('r.createdAt < :end')
+            ->setParameter('start', $start)
+            ->setParameter('end', $end);
+
+        return (float) $qb->getQuery()->getSingleScalarResult();
+    }
+
     //    /**
     //     * @return Reservation[] Returns an array of Reservation objects
     //     */

@@ -8,6 +8,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
+use DateTimeInterface;
 
 /**
  * @extends ServiceEntityRepository<User>
@@ -31,6 +32,18 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $user->setPassword($newHashedPassword);
         $this->getEntityManager()->persist($user);
         $this->getEntityManager()->flush();
+    }
+
+    public function countBetween(DateTimeInterface $from, DateTimeInterface $to): int
+    {
+        $qb = $this->createQueryBuilder('u')
+            ->select('COUNT(u.id)')
+            ->andWhere('u.createdAt >= :from')
+            ->andWhere('u.createdAt < :to')
+            ->setParameter('from', $from)
+            ->setParameter('to', $to);
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
     }
 
     //    /**

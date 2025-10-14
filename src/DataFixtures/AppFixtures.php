@@ -115,6 +115,10 @@ class AppFixtures extends Fixture
             $roles = $possibleRoles[array_rand($possibleRoles)];
             $user->setRoles($roles);
 
+            $createdMutable = $faker->dateTimeBetween('-1 week', 'now');
+            $createdImmutable = \DateTimeImmutable::createFromMutable($createdMutable);
+            $user->setCreatedAt($createdImmutable);
+
             // Mot de passe simple pour fixtures
             $plaintext = 'password';
             $hashed = $this->passwordHasher->hashPassword($user, $plaintext);
@@ -143,6 +147,10 @@ class AppFixtures extends Fixture
                 $place = $places[array_rand($places)];
                 $reservation->setPlace($place);
 
+                $createdMutable = $faker->dateTimeBetween('-1 week', 'now');
+                $createdImmutable = \DateTimeImmutable::createFromMutable($createdMutable);
+                $reservation->setCreatedAt($createdImmutable);
+
                 // Ajouter la relation inverse si disponible
                 if (method_exists($user, 'addReservation')) {
                     $user->addReservation($reservation);
@@ -164,7 +172,7 @@ class AppFixtures extends Fixture
                     $review->setPlace($place);
                     $review->setUser($faker->randomElement($users));
                     $review->setRating($faker->numberBetween(1, 5));
-                    $review->setComment($faker->paragraph());
+                    $review->setComment($faker->text());
                     if (method_exists($review, 'setCreatedAt')) {
                         $createdMutable = $faker->dateTimeBetween('-1 year', 'now');
                         $createdImmutable = \DateTimeImmutable::createFromMutable($createdMutable);

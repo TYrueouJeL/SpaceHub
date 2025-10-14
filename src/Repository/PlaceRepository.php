@@ -16,6 +16,32 @@ class PlaceRepository extends ServiceEntityRepository
         parent::__construct($registry, Place::class);
     }
 
+    public function calculateOccupancyRate(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate): float
+    {
+        $entityManager = $this->getEntityManager();
+
+        // Nombre total de places
+        $totalPlaces = $this->count([]);
+
+        if ($totalPlaces === 0) {
+            return 0.0; // Éviter la division par zéro
+        }
+
+        // Nombre de places réservées dans la période donnée
+        $query = $entityManager->createQuery(
+            'SELECT COUNT(DISTINCT p.id) FROM App\Entity\Place p
+             JOIN p.reservations r
+             WHERE r.startDate < :endDate AND r.endDate > :startDate'
+        )
+            ->setParameter('startDate', $startDate)
+            ->setParameter('endDate', $endDate);
+
+        $reservedPlaces = (int) $query->getSingleScalarResult();
+
+        // Calcul du taux d\'occupation
+        return ($reservedPlaces / $totalPlaces) * 100;
+    }
+
     //    /**
     //     * @return Place[] Returns an array of Place objects
     //     */

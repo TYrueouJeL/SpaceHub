@@ -19,6 +19,10 @@
                     <a class="btn btn-outline" href="/register">Créer un compte</a>
                     <a class="btn btn-primary" href="/login">Se connecter</a>
                 {% endif %}
+
+                {% if is_granted('ROLE_ADMIN') %}
+                    <a class="btn btn-admin" href="/admin/dashboard">Admin</a>
+                {% endif %}
             </div>
 
             <!-- Mobile Menu -->

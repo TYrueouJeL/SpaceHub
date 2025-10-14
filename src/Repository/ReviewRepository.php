@@ -16,6 +16,14 @@ class ReviewRepository extends ServiceEntityRepository
         parent::__construct($registry, Review::class);
     }
 
+    public function getAverageNote(): ?float
+    {
+        $qb = $this->createQueryBuilder('r');
+        $qb->select('AVG(r.rating) as avg_note');
+
+        return (float) $qb->getQuery()->getSingleScalarResult();
+    }
+
     //    /**
     //     * @return Review[] Returns an array of Review objects
     //     */

@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard Admin{% endblock %}
+
+{% block body %}
+    <h1>Dashboard Admin</h1>
+
+    <div class="dashboard-cards">
+        <div class="card">
+            <h2>Utilisateurs</h2>
+            <h3>Total</h3>
+            <p>{{ totalUsers }}</p>
+            <h2>Nouveaux utilisateurs</h2>
+            <h3>Aujourd'hui</h3>
+            <p>{{ newUsersToday }}</p>
+            <h3>Cette semaine</h3>
+            <p>{{ newUsersThisWeek }}</p>
+            <h3>Ce mois</h3>
+            <p>{{ newUsersThisMonth }}</p>
+        </div>
+        <div class="card">
+            <h2>Lieux</h2>
+            <h3>Total</h3>
+            <p>{{ totalPlaces }}</p>
+            <h2>Taux d'occupation</h2>
+            <h3>Aujourd'hui</h3>
+            <p>{{ occupancyRateToday|number_format(2, ',', ' ') }}%</p>
+            <h3>Cette semaine</h3>
+            <p>{{ occupancyRateThisWeek|number_format(2, ',', ' ') }}%</p>
+            <h3>Ce mois</h3>
+            <p>{{ occupancyRateThisMonth|number_format(2, ',', ' ') }}%</p>
+            <h2>Note moyenne</h2>
+            <h3>Global</h3>
+            <p>{{ averageReviewNote|number_format(2, ',', ' ') }}/5</p>
+        </div>
+        <div class="card">
+            <h2>Réservations</h2>
+            <h3>Total</h3>
+            <p>{{ totalReservations }}</p>
+            <h2>Nouvelles réservations</h2>
+            <h3>Aujourd'hui</h3>
+            <p>{{ newReservationsToday }}</p>
+            <h3>Cette semaine</h3>
+            <p>{{ newReservationsThisWeek }}</p>
+            <h3>Ce mois</h3>
+            <p>{{ newReservationsThisMonth }}</p>
+        </div>
+        <div class="card">
+            <h2>Revenus</h2>
+            <h3>Total</h3>
+            <p>{{ totalIncome|number_format(2, ',', ' ') }}€</p>
+            <h2>Nouveaux revenus</h2>
+            <h3>Aujourd'hui</h3>
+            <p>{{ incomeToday|number_format(2, ',', ' ') }}€</p>
+            <h3>Cette semaine</h3>
+            <p>{{ incomeThisWeek|number_format(2, ',', ' ') }}€</p>
+            <h3>Ce mois</h3>
+            <p>{{ incomeThisMonth|number_format(2, ',', ' ') }}€</p>
+        </div>
+    </div>
+{% endblock %}

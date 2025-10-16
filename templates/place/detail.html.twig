@@ -3,73 +3,179 @@
 {% block title %}Tous les lieux{% endblock %}
 
 {% block body %}
-    <section class="popular-venues">
+    <!-- Venue Hero -->
+    <section class="venue-hero">
         <div class="container">
-            <div class="section-header text-center mb-xl">
-                <h2 class="section-title mb-sm">{{ place.name }}</h2>
-                <p class="section-description">{{ place.description }}</p>
+            <div class="venue-hero-content">
+                <nav class="breadcrumb mb-sm">
+                    <a href="{{ path('app_home') }}">Accueil</a> >
+                    <a href="{{ path('app_place') }}">Lieux</a> >
+                    <span>{{ place.name }}</span>
+                </nav>
+                <h1 class="venue-title mb-sm">{{ place.name }}</h1>
+                <div class="venue-meta flex items-center gap-md mb-md flex-wrap">
+                    <span class="venue-location">📍 {{ place.address }}</span>
+                    <span class="venue-capacity">👥 Jusqu'à {{ place.capacity }} personnes</span>
+                    <div class="venue-rating">
+                        {% for i in 1..5 %}
+                            {% if i <= averageReviewRating|round(0) %}
+                                <span class="stars">⭐</span>
+                            {% endif %}
+                        {% endfor %}
+                        <span class="rating-text">({{ averageReviewRating|number_format(2, ',') }} - {{ reviewNumber }} avis)</span>
+                    </div>
+                </div>
             </div>
-            <div class="venues-grid">
-                <div class="card">
-                    <img src="https://picsum.photos/400/200?random={{ place.id }}" alt="{{ place.name }}" class="card-img card-img-top">
-                    <div class="card-body">
-                        <h3 class="card-title">{{ place.name }}</h3>
-                        <p class="card-text">{{ place.type.name }}</p>
-                        <p class="card-text">{{ place.description }}</p>
-                        <p class="card-text venue-location">{{ place.address }}</p>
-                        <p class="card-text venue-capacity">Jusqu'à {{ place.capacity }} personnes</p>
-                        <div>
-                            <p class="card-text">Équipements :</p>
+        </div>
+    </section>
 
-                            {% for equipment in equipments %}
-                                <span class="badge badge-primary">{{ equipment.name }}</span>
-                            {% endfor %}
-                        </div>
-                        <p class="venue-price">À partir de {{ place.price }}€/jour</p>
-                        <a href="/place/{{ place.id }}/reservation" class="btn btn-outline btn-sm">Réserver</a>
+    <!-- Venue Gallery -->
+    <section class="venue-gallery">
+        <div class="container">
+            <div class="gallery-grid">
+                <div class="gallery-main">
+                    <img src="https://picsum.photos/800/400?random=20" alt="Vue principale de la {{ place.name }}" class="main-image">
+                </div>
+                <div class="gallery-thumbs">
+                    <img src="https://picsum.photos/200/150?random=21" alt="Vue 2" class="thumb-image">
+                    <img src="https://picsum.photos/200/150?random=22" alt="Vue 3" class="thumb-image">
+                    <img src="https://picsum.photos/200/150?random=23" alt="Vue 4" class="thumb-image">
+                    <img src="https://picsum.photos/200/150?random=24" alt="Vue 5" class="thumb-image">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Venue Content -->
+    <section class="venue-content">
+        <div class="container">
+            <div class="content-grid">
+                <div class="venue-info">
+                    <div class="info-section mb-xl">
+                        <h2 class="section-title mb-md">Description</h2>
+                        <p class="mb-md">
+                            {{ place.description }}
+                        </p>
                     </div>
 
-                    {% for review in reviews %}
-                        <div class="card-footer">
-                            <strong>{{ review.user.email }}</strong> -
-                            <span class="text-muted ">{{ review.createdAt|date('d/m/Y') }}</span>
-                            <p>{{ review.comment }}</p>
-                            <p>Note : {{ review.rating }}/5</p>
+                    <div class="info-section mb-xl">
+                        <h2 class="section-title mb-md">Équipements inclus</h2>
+                        <div class="equipment-grid">
+                            {% for equipement in equipments %}
+                                <div class="equipment-item flex items-center gap-sm">
+                                    <span class="equipment-icon">{{ equipement.icon }}</span>
+                                    <span>{{ equipement.name }}</span>
+                                </div>
+                            {% endfor %}
                         </div>
-                    {% else %}
-                        <div class="card-footer">
-                            <p>Aucun avis pour le moment.</p>
+                    </div>
+
+                    <div class="info-section mb-xl">
+                        <h2 class="section-title mb-md">Localisation</h2>
+                        <div class="location-info mb-md">
+                            <p class="mb-sm"><strong>Adresse :</strong> {{ place.address }}</p>
                         </div>
-                    {% endfor %}
+                        <div class="map-placeholder">
+                            <p class="text-center">📍 Carte interactive (Google Maps)</p>
+                        </div>
+                    </div>
+
+                    <div class="info-section">
+                        <h2 class="section-title mb-md">Avis clients</h2>
+                        <div class="reviews">
+                            {% for review in reviews %}
+                            <div class="review-item mb-md">
+                                <div class="review-header flex justify-between items-center mb-sm">
+                                    <div class="reviewer-info">
+                                        <span class="reviewer-name">{{ review.user.email }}</span>
+
+                                        {% for i in 1..5 %}
+                                            {% if i <= review.rating %}
+                                                <span class="stars">⭐</span>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+
+                                    <span class="review-date">{{ review.createdAt|date('d/m/Y') }}</span>
+                                </div>
+
+                                <p>{{ review.comment }}</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
 
                     {% if reviewStatus == "not_logged_in" %}
-                        <div class="card-footer">
+                        <div class="review-item mb-md">
                             <p>Vous devez être connecté pour laisser un avis.</p>
                         </div>
                     {% elseif reviewStatus == "already_reviewed" %}
-                        <div class="card-footer">
+                        <div class="review-item mb-md">
                             <p>Vous avez déjà laissé un avis pour ce lieu.</p>
                         </div>
                     {% else %}
-                        {{ form_start(reviewForm) }}
-                        <div class="mb-3">
-                            {{ form_row(reviewForm.rating, {
-                                'label': 'Note (1 à 5)',
-                                'attr': {'class': 'form-control', 'min': 1, 'max': 5, 'step': 1, 'type': 'number', 'placeholder': 'Entrez une note entre 1 et 5'}
-                            }) }}
+                        <div class="review-item mb-md">
+                            {{ form_start(reviewForm) }}
+                            <div class="mb-3">
+                                {{ form_row(reviewForm.rating, {
+                                    'label': 'Note (1 à 5)',
+                                    'attr': {'class': 'form-control', 'min': 1, 'max': 5, 'step': 1, 'type': 'number', 'placeholder': 'Entrez une note entre 1 et 5'}
+                                }) }}
+                            </div>
+                            <div class="mb-3">
+                                {{ form_row(reviewForm.comment, {
+                                    'label': 'Commentaire',
+                                    'attr': {'class': 'form-control', 'placeholder': 'Laissez votre commentaire ici...'}
+                                }) }}
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Ajouter un avis</button>
+                            {{ form_end(reviewForm) }}
                         </div>
-                        <div class="mb-3">
-                            {{ form_row(reviewForm.comment, {
-                                'label': 'Commentaire',
-                                'attr': {'class': 'form-control', 'placeholder': 'Laissez votre commentaire ici...'}
-                            }) }}
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Ajouter un avis</button>
-                        {{ form_end(reviewForm) }}
                     {% endif %}
-
-                    <a class="" href="/place">Retour</a>
                 </div>
+
+
+                <div class="booking-sidebar">
+                    <div class="booking-card bg-white p-lg border-radius shadow">
+                        <div class="price-section mb-lg">
+                            <div class="price-display">
+                                <span class="price">{{ place.price }}€</span>
+                                <span class="price-unit">/ jour</span>
+                            </div>
+                        </div>
+
+                        {% if app.user %}
+                            {{ form(reservationForm) }}
+                        {% else %}
+                            <p class="text-center">Veuillez vous <a href="{{ path('app_login') }}">connecter</a> pour réserver.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Similar Venues -->
+    <section class="similar-venues">
+        <div class="container">
+            <h2 class="section-title text-center mb-xl">Lieux similaires</h2>
+            <div class="venues-grid">
+                {% for place in similarPlaces %}
+                    <div class="card">
+                        <img src="https://picsum.photos/400/200?random={{ place.id }}" alt="{{ place.name }}" class="card-img card-img-top">
+                        <div class="card-body">
+                            <h3 class="card-title">{{ place.name }}</h3>
+                            <p class="card-text">{{ place.type.name }}</p>
+                            <p class="card-text venue-location">{{ place.address }}</p>
+                            <p class="card-text venue-capacity">Jusqu'à {{ place.capacity }} personnes</p>
+                            <p class="card-text">{{ place.description }}</p>
+                            <p class="venue-price">À partir de {{ place.price }}€/jour</p>
+                            <a href="{{ path('app_place_detail', {'id': place.id}) }}" class="btn btn-outline btn-sm">Voir détails</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <p>Aucun lieu trouvé.</p>
+                {% endfor %}
             </div>
         </div>
     </section>

@@ -34,7 +34,6 @@
                             <p class="card-text">{{ place.description }}</p>
                             <p class="venue-price">À partir de {{ place.price }}€/jour</p>
                             <a href="{{ path('app_place_detail', {'id': place.id}) }}" class="btn btn-outline btn-sm">Voir détails</a>
-                            <a href="{{ path('app_place_reservation', {'id': place.id}) }}" class="btn btn-outline btn-sm">Réserver</a>
                         </div>
                     </div>
                 {% else %}
@@ -42,7 +41,6 @@
                 {% endfor %}
             </div>
 
-            {# Pagination controls #}
             {% set currentPage = currentPage|default(app.request.get('page')|default(1)) %}
             {% set totalPages = totalPages|default(1) %}
             {% if totalPages > 1 %}

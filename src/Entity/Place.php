@@ -51,6 +51,9 @@ class Place
     #[ORM\OneToMany(targetEntity: Review::class, mappedBy: 'place')]
     private Collection $reviews;
 
+    #[ORM\Column(type: 'datetime_immutable')]
+    private ?\DateTimeImmutable $createdAt = null;
+
     public function __construct()
     {
         $this->reservations = new ArrayCollection();
@@ -133,6 +136,16 @@ class Place
         $this->type = $type;
 
         return $this;
+    }
+
+    public function setCreatedAt()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
     }
 
     /**

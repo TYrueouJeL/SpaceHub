@@ -8,20 +8,20 @@
                 </a>
             </div>
             <ul class="nav-menu">
-                <li><a href="/" class="nav-link active">Accueil</a></li>
-                <li><a href="/place" class="nav-link">Lieux</a></li>
+                <li><a href="{{ path('app_home') }}" class="nav-link active">Accueil</a></li>
+                <li><a href="{{ path('app_place') }}" class="nav-link">Lieux</a></li>
             </ul>
             <div class="nav-actions">
                 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                     <a class="btn btn-outline" href="{{ path('app_user', {'id': app.user.id}) }}">Mon compte</a>
-                    <a class="btn btn-primary" href="/logout">Se déconnecter</a>
+                    <a class="btn btn-primary" href="{{ path('app_logout') }}">Se déconnecter</a>
                 {% else %}
-                    <a class="btn btn-outline" href="/register">Créer un compte</a>
-                    <a class="btn btn-primary" href="/login">Se connecter</a>
+                    <a class="btn btn-outline" href="{{ path('app_register') }}">Créer un compte</a>
+                    <a class="btn btn-primary" href="{{ path('app_login') }}">Se connecter</a>
                 {% endif %}
 
                 {% if is_granted('ROLE_ADMIN') %}
-                    <a class="btn btn-admin" href="/admin/dashboard">Admin</a>
+                    <a class="btn btn-admin" href="{{ path('app_admin_dashboard') }}">Admin</a>
                 {% endif %}
             </div>
 
@@ -37,16 +37,20 @@
 
             <div class="mobile-nav-menu">
                 <ul>
-                    <li><a href="/" class="nav-link active">Accueil</a></li>
-                    <li><a href="/place" class="nav-link">Lieux</a></li>
+                    <li><a href="{{ path('app_home') }}" class="nav-link active">Accueil</a></li>
+                    <li><a href="{{ path('app_place') }}" class="nav-link">Lieux</a></li>
                 </ul>
                 <div class="mobile-nav-actions">
                     {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                         <a class="btn btn-outline" href="{{ path('app_user', {'id': app.user.id}) }}">Mon compte</a>
-                        <a class="btn btn-primary" href="/logout">Se déconnecter</a>
+                        <a class="btn btn-primary" href="{{ path('app_logout') }}">Se déconnecter</a>
                     {% else %}
-                        <a class="btn btn-outline" href="/register">Créer un compte</a>
-                        <a class="btn btn-primary" href="/login">Se connecter</a>
+                        <a class="btn btn-outline" href="{{ path('app_register') }}">Créer un compte</a>
+                        <a class="btn btn-primary" href="{{ path('app_login') }}">Se connecter</a>
+                    {% endif %}
+
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a class="btn btn-admin" href="{{ path('app_admin_dashboard') }}">Admin</a>
                     {% endif %}
                 </div>
             </div>

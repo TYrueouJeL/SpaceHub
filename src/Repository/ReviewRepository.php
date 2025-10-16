@@ -24,6 +24,16 @@ class ReviewRepository extends ServiceEntityRepository
         return (float) $qb->getQuery()->getSingleScalarResult();
     }
 
+    public function getAverageNoteByPlaceId(int $placeId): ?float
+    {
+        $qb = $this->createQueryBuilder('r');
+        $qb->select('AVG(r.rating) as avg_note')
+            ->where('r.place = :placeId')
+            ->setParameter('placeId', $placeId);
+
+        return (float) $qb->getQuery()->getSingleScalarResult();
+    }
+
     //    /**
     //     * @return Review[] Returns an array of Review objects
     //     */

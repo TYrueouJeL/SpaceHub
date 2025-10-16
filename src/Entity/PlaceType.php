@@ -21,6 +21,9 @@ class PlaceType
     #[ORM\Column(length: 255)]
     private ?string $description = null;
 
+    #[ORM\Column(type: 'datetime_immutable')]
+    private ?\DateTimeImmutable $createdAt = null;
+
     /**
      * @var Collection<int, Place>
      */
@@ -89,5 +92,15 @@ class PlaceType
         }
 
         return $this;
+    }
+
+    public function setCreatedAt()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
     }
 }

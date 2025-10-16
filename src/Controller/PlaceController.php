@@ -4,13 +4,12 @@ namespace App\Controller;
 
 use App\Entity\Reservation;
 use App\Entity\Review;
-use App\Form\PlaceReservationFormType;
+use App\Form\ReservationFormType;
 use App\Form\ReviewFormType;
-use App\Repository\EquipmentRepository;
+use App\Repository\EventTypeRepository;
 use App\Repository\PlaceEquipementRepository;
 use App\Repository\PlaceRepository;
 use App\Repository\PlaceTypeRepository;
-use App\Repository\ReservationRepository;
 use App\Repository\ReviewRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -68,12 +67,12 @@ final class PlaceController extends AbstractController
     }
 
     #[Route('/place/{id}', name: 'app_place_detail')]
-    public function detail(int $id, PlaceRepository $placeRepository, PlaceEquipementRepository $placeEquipementRepository, ReviewRepository $reviewRepository, Request $request, EntityManagerInterface $entityManager): Response
+    public function detail(int $id, EventTypeRepository $eventTypeRepository, PlaceRepository $placeRepository, PlaceEquipementRepository $placeEquipementRepository, ReviewRepository $reviewRepository, Request $request, EntityManagerInterface $entityManager): Response
     {
         $place = $placeRepository->find($id);
         $reviewForm = null;
         $reviewFormView = null;
-        $reviewStatus = 'not_logged_in'; // 'can_review' | 'already_reviewed' | 'not_logged_in'
+        $reviewStatus = 'not_logged_in';
 
         if (!$place) {
             throw $this->createNotFoundException('Le lieu demandé n\'existe pas.');
@@ -116,10 +115,48 @@ final class PlaceController extends AbstractController
                 if ($reviewForm instanceof FormInterface) {
                     $reviewFormView = $reviewForm->createView();
                 }
+
             }
         } else {
             $reviewStatus = 'not_logged_in';
         }
+
+        $averageReviewRating = $reviewRepository->getAverageNoteByPlaceId($place->getId());
+        $reviewNumber = $reviewRepository->count(['place' => $place]);
+
+        $eventTypes = $eventTypeRepository->findAll();
+
+        $reservation = new Reservation();
+        $reservationForm = $this->createForm(ReservationFormType::class, $reservation, ['place' => $place]);
+        $reservationForm->handleRequest($request);
+
+        if ($reservationForm->isSubmitted() && $reservationForm->isValid()) {
+            $reservation->setPlace($place);
+            $reservation->setUser($user);
+
+            $startDate = $reservationForm->get('startDate')->getData();
+            $endDate = $reservationForm->get('endDate')->getData();
+
+            if ($startDate > $endDate) {
+
+            }
+
+            $reservation->setStartDate($startDate);
+            $reservation->setEndDate($endDate);
+            $reservation->setCreatedAt();
+            $reservation->setEventType($reservationForm->get('eventType')->getData());
+            $reservation->setPeopleNumber($reservationForm->get('peopleNumber')->getData());
+
+            $dateDiff = $startDate->diff($endDate);
+            $price = $place->getPrice() * $dateDiff->days;
+            $reservation->setPrice($price);
+
+            $entityManager->persist($reservation);
+            $entityManager->flush();
+
+        }
+
+        $similarPlaces = $placeRepository->findBy(['type' => $place->getType()], ['id' => 'DESC'], 3);
 
         return $this->render('place/detail.html.twig', [
             'place' => $place,
@@ -127,43 +164,11 @@ final class PlaceController extends AbstractController
             'reviews' => $reviews,
             'reviewForm' => $reviewFormView,
             'reviewStatus' => $reviewStatus,
-        ]);
-    }
-
-    #[Route('/place/{id}/reservation', name: 'app_place_reservation')]
-    public function reservation(int $id, PlaceRepository $placeRepository, Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $place = $placeRepository->find($id);
-        $user = $this->getUser();
-
-        if (!$user) {
-            return $this->redirectToRoute('app_login');
-        }
-
-        if (!$place) {
-            throw $this->createNotFoundException('Le lieu demandé n\'existe pas.');
-        }
-
-        $form = $this->createForm(PlaceReservationFormType::class);
-        $form->handleRequest($request);
-
-        $reservation = new Reservation();
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $reservation->setStartDate($form->get('startDate')->getData());
-            $reservation->setEndDate($form->get('endDate')->getData());
-            $reservation->setPlace($place);
-            $reservation->setUser($user);
-
-            $entityManager->persist($reservation);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_user');
-        }
-
-        return $this->render('place/reservation.html.twig', [
-            'place' => $place,
-            'reservationForm' => $form->createView(),
+            'averageReviewRating' => $averageReviewRating ?? 0,
+            'reviewNumber' => $reviewNumber,
+            'eventTypes' => $eventTypes,
+            'reservationForm' => $reservationForm,
+            'similarPlaces' => $similarPlaces,
         ]);
     }
 }

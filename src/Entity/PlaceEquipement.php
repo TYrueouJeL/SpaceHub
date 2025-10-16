@@ -9,15 +9,15 @@ use Doctrine\ORM\Mapping as ORM;
 class PlaceEquipement
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
-
     #[ORM\ManyToOne(inversedBy: 'placeEquipements')]
     private ?Place $place = null;
 
+    #[ORM\Id]
     #[ORM\ManyToOne(inversedBy: 'placeEquipements')]
     private ?Equipment $equipment = null;
+
+    #[ORM\Column(type: 'datetime_immutable')]
+    private ?\DateTimeImmutable $createdAt = null;
 
     public function getId(): ?int
     {
@@ -46,5 +46,15 @@ class PlaceEquipement
         $this->equipment = $equipment;
 
         return $this;
+    }
+
+    public function setCreatedAt()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
     }
 }

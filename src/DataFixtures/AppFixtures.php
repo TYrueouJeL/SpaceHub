@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\EventType;
 use App\Entity\Review;
 use App\Entity\User;
 use App\Entity\Reservation;
@@ -41,6 +42,7 @@ class AppFixtures extends Fixture
             $pt = new PlaceType();
             $pt->setName($data['name']);
             $pt->setDescription($data['description']);
+            $pt->setCreatedAt();
             $manager->persist($pt);
             $placeTypes[] = $pt;
         }
@@ -58,17 +60,50 @@ class AppFixtures extends Fixture
             'Haut-parleurs',
         ];
 
+        // Générer un équipement
+        $equipmentIcons = [
+            'Projecteur' => '📽️',
+            'Tableau blanc' => '📝',
+            'Vidéo-conférence' => '💻',
+            'Microphone' => '🎤',
+            'Chaises supplémentaires' => '🪑',
+            'Paperboard' => '📋',
+            'Écran' => '🖥️',
+            'Climatisation' => '❄️',
+            'Haut-parleurs' => '🔊',
+        ];
+
         $equipments = [];
         foreach ($equipmentNames as $name) {
             $e = new Equipment();
             $e->setName($name);
+            $e->setIcon($equipmentIcons[$name] ?? '🔧');
+            $e->setCreatedAt();
             $manager->persist($e);
             $equipments[] = $e;
         }
 
+        // Générer des types d'évènements
+        $eventTypesNames = [
+            'Conférence',
+            'Séminaire',
+            'Formation',
+            'Réunion',
+            'Autre',
+        ];
+
+        $eventTypes = [];
+        foreach ($eventTypesNames as $name) {
+            $et = new EventType();
+            $et->setName($name);
+
+            $manager->persist($et);
+            $eventTypes[] = $et;
+        }
+
         // Générer des Places et leur associer un PlaceType + équipements
         $places = [];
-        $placesCount = 20;
+        $placesCount = 30;
         for ($p = 0; $p < $placesCount; $p++) {
             $place = new Place();
             $place->setName($faker->company . ' - ' . $faker->word);
@@ -77,13 +112,14 @@ class AppFixtures extends Fixture
             $place->setDescription($faker->sentence(8));
             $place->setPrice($faker->numberBetween(30, 800));
             $place->setType($placeTypes[array_rand($placeTypes)]);
+            $place->setCreatedAt();
 
             $manager->persist($place);
             $places[] = $place;
 
-            // Associer 1 à 4 équipements distincts par place
+            // Associer 4 à 8 équipements distincts par place
             $assigned = [];
-            $equipCount = rand(1, 4);
+            $equipCount = rand(4, 8);
             for ($i = 0; $i < $equipCount; $i++) {
                 $eq = $equipments[array_rand($equipments)];
                 if (in_array(spl_object_hash($eq), $assigned, true)) {
@@ -95,6 +131,7 @@ class AppFixtures extends Fixture
                 // Utiliser les méthodes add pour maintenir les deux côtés de la relation
                 $place->addPlaceEquipement($pe);
                 $eq->addPlaceEquipement($pe);
+                $pe->setCreatedAt();
                 $manager->persist($pe);
             }
         }
@@ -106,29 +143,26 @@ class AppFixtures extends Fixture
             ['ROLE_USER', 'ROLE_ADMIN'],
         ];
 
-        // Générer 10 utilisateurs
+        // Générer 20 utilisateurs
         $users = [];
-        for ($i = 1; $i <= 10; $i++) {
+        for ($i = 1; $i <= 20; $i++) {
             $user = new User();
             $email = $faker->unique()->safeEmail();
             $user->setEmail($email);
             $roles = $possibleRoles[array_rand($possibleRoles)];
             $user->setRoles($roles);
 
-            $createdMutable = $faker->dateTimeBetween('-1 week', 'now');
-            $createdImmutable = \DateTimeImmutable::createFromMutable($createdMutable);
-            $user->setCreatedAt($createdImmutable);
-
             // Mot de passe simple pour fixtures
             $plaintext = 'password';
             $hashed = $this->passwordHasher->hashPassword($user, $plaintext);
             $user->setPassword($hashed);
+            $user->setCreatedAt();
 
             $manager->persist($user);
             $users[] = $user;
 
-            // Générer 1 à 5 réservations par utilisateur, liées à des places existantes
-            $reservationsCount = rand(1, 5);
+            // Générer 3 à 7 réservations par utilisateur, liées à des places existantes
+            $reservationsCount = rand(3, 7);
             for ($r = 0; $r < $reservationsCount; $r++) {
                 $reservation = new Reservation();
 
@@ -147,9 +181,12 @@ class AppFixtures extends Fixture
                 $place = $places[array_rand($places)];
                 $reservation->setPlace($place);
 
-                $createdMutable = $faker->dateTimeBetween('-1 week', 'now');
-                $createdImmutable = \DateTimeImmutable::createFromMutable($createdMutable);
-                $reservation->setCreatedAt($createdImmutable);
+                $eventType = $eventTypes[array_rand($eventTypes)];
+                $reservation->setEventType($eventType);
+
+                $reservation->setPeopleNumber(rand(1, $place->getCapacity()));
+
+                $reservation->setPrice(rand(100, 1000));
 
                 // Ajouter la relation inverse si disponible
                 if (method_exists($user, 'addReservation')) {
@@ -159,33 +196,42 @@ class AppFixtures extends Fixture
                     $place->addReservation($reservation);
                 }
 
+                $reservation->setCreatedAt();
+
                 $manager->persist($reservation);
             }
         }
 
         // Générer des Reviews pour les places (0 à 5 avis par place)
+        // Assurer l'unicité: pour chaque place on choisit des utilisateurs distincts
         if (!empty($users) && !empty($places)) {
             foreach ($places as $place) {
-                $count = rand(0, 5);
-                for ($i = 0; $i < $count; $i++) {
+                $maxPerPlace = min(count($users), 5);
+                $count = rand(0, $maxPerPlace);
+                if ($count === 0) {
+                    continue;
+                }
+
+                // Sélectionner $count utilisateurs distincts pour cette place
+                $shuffled = $users;
+                shuffle($shuffled);
+                $selectedUsers = array_slice($shuffled, 0, $count);
+
+                foreach ($selectedUsers as $u) {
                     $review = new Review();
                     $review->setPlace($place);
-                    $review->setUser($faker->randomElement($users));
+                    $review->setUser($u);
                     $review->setRating($faker->numberBetween(1, 5));
                     $review->setComment($faker->text());
-                    if (method_exists($review, 'setCreatedAt')) {
-                        $createdMutable = $faker->dateTimeBetween('-1 year', 'now');
-                        $createdImmutable = \DateTimeImmutable::createFromMutable($createdMutable);
-                        $review->setCreatedAt($createdImmutable);
-                    }
+                    $review->setCreatedAt();
                     $manager->persist($review);
 
-                    // si l'entité Place ou User a des méthodes d'ajout inverse, les appeler
+                    // appeler les méthodes d'ajout inverse si elles existent
                     if (method_exists($place, 'addReview')) {
                         $place->addReview($review);
                     }
-                    if (method_exists($review->getUser(), 'addReview')) {
-                        $review->getUser()->addReview($review);
+                    if (method_exists($u, 'addReview')) {
+                        $u->addReview($review);
                     }
                 }
             }

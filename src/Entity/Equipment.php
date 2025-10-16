@@ -18,11 +18,17 @@ class Equipment
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    #[ORM\Column(type: 'datetime_immutable')]
+    private ?\DateTimeImmutable $createdAt = null;
+
     /**
      * @var Collection<int, PlaceEquipement>
      */
     #[ORM\OneToMany(targetEntity: PlaceEquipement::class, mappedBy: 'equipment')]
     private Collection $placeEquipements;
+
+    #[ORM\Column(length: 255)]
+    private ?string $icon = null;
 
     public function __construct()
     {
@@ -44,6 +50,16 @@ class Equipment
         $this->name = $name;
 
         return $this;
+    }
+
+    public function setCreatedAt()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
     }
 
     /**
@@ -72,6 +88,18 @@ class Equipment
                 $placeEquipement->setEquipment(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getIcon(): ?string
+    {
+        return $this->icon;
+    }
+
+    public function setIcon(string $icon): static
+    {
+        $this->icon = $icon;
 
         return $this;
     }

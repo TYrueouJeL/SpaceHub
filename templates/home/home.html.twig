@@ -75,8 +75,7 @@
                             <p class="card-text venue-capacity">Jusqu'à {{ place.capacity }} personnes</p>
                             <p class="card-text">{{ place.description }}</p>
                             <p class="venue-price">À partir de {{ place.price }}€/jour</p>
-                            <a href="/place/{{ place.id }}" class="btn btn-outline btn-sm">Voir détails</a>
-                            <a href="/place/{{ place.id }}/reservation" class="btn btn-outline btn-sm">Réserver</a>
+                            <a href="{{ path('app_place_detail', {'id': place.id}) }}" class="btn btn-outline btn-sm">Voir détails</a>
                         </div>
                     </div>
                 {% endfor %}

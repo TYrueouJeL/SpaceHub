@@ -29,6 +29,15 @@ class Reservation
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
+    #[ORM\ManyToOne(inversedBy: 'reservations')]
+    private ?EventType $eventType = null;
+
+    #[ORM\Column]
+    private ?int $peopleNumber = null;
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    private ?string $price = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -82,14 +91,48 @@ class Reservation
         return $this;
     }
 
+    public function setCreatedAt()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+    }
+
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    public function getEventType(): ?EventType
     {
-        $this->createdAt = $createdAt;
+        return $this->eventType;
+    }
+
+    public function setEventType(?EventType $eventType): static
+    {
+        $this->eventType = $eventType;
+
+        return $this;
+    }
+
+    public function getPeopleNumber(): ?int
+    {
+        return $this->peopleNumber;
+    }
+
+    public function setPeopleNumber(int $peopleNumber): static
+    {
+        $this->peopleNumber = $peopleNumber;
+
+        return $this;
+    }
+
+    public function getPrice(): ?string
+    {
+        return $this->price;
+    }
+
+    public function setPrice(string $price): static
+    {
+        $this->price = $price;
 
         return $this;
     }

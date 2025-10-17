@@ -43,6 +43,8 @@ class SecurityController extends AbstractController
                     $form->get('password')->getData()
                 )
             );
+            $user->setEmail($form->get('email')->getData());
+            $user->setCreatedAt();
 
             $entityManager->persist($user);
             $entityManager->flush();
